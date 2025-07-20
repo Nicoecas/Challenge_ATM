@@ -1,0 +1,7 @@
+dotnet ef migrations add InitialCreate --context Challenge_ATM_DbContext --output-dir Data\Migrations
+
+dotnet ef migrations add NUEVAMIGRACION --output-dir Data\Migrations
+
+dotnet ef migrations remove --context Challenge_ATM_DbContext
+
+dotnet ef database update --context Challenge_ATM_DbContext

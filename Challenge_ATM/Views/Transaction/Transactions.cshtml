@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Challenge_ATM.Models.TransactionModel>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Movimientos";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body text-center">
+                    <span class="text-danger">@TempData["Message"]</span>
+                </div>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="card-body text-center">
+                        <span class="text-danger">No hay transacciones disponibles</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th class="text-end">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var transaction in Model)
+                                    {
+                                        <tr>
+                                            <td>@transaction.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                @switch (transaction.Type)
+                                                {
+                                                    case Challenge_ATM.Models.TransactionType.Balance:
+                                                        <span class="badge bg-info">Balance</span>
+                                                        break;
+                                                    case Challenge_ATM.Models.TransactionType.Withdrawal:
+                                                        <span class="badge bg-danger">Retiro</span>
+                                                        break;
+                                                    case Challenge_ATM.Models.TransactionType.Deposit:
+                                                        <span class="badge bg-success">Depósito</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                @if (transaction.Type == Challenge_ATM.Models.TransactionType.Balance)
+                                                {
+                                                    <span class="text-muted">N/A</span>
+                                                }
+                                                else if (transaction.Amount.HasValue)
+                                                {
+                                                    var amount = transaction.Amount.Value;
+                                                    var formattedAmount = amount.ToString("C2", new CultureInfo("es-AR"));
+
+                                                    if (transaction.Type == Challenge_ATM.Models.TransactionType.Withdrawal)
+                                                    {
+                                                        <span class="text-danger">-@formattedAmount</span>
+                                                    }
+                                                    else if (transaction.Type == Challenge_ATM.Models.TransactionType.Deposit)
+                                                    {
+                                                        <span class="text-success">+@formattedAmount</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @formattedAmount
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">--</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

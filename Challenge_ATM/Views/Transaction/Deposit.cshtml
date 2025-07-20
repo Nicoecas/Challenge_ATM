@@ -1,0 +1,171 @@
+﻿@model DepositModel
+@{
+    ViewData["Title"] = "Depósito";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Realizar Depósito</h3>
+                </div>
+                <div class="card-body">
+                    <span class="text-danger">@TempData["Message"]</span>
+                    <form asp-action="Deposit" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Amount" class="form-label">Monto</label>
+                            <input asp-for="Amount" type="text" id="valueInput" class="form-control" pattern="^\d{1,9}(,\d{0,2})?$" />
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Depositar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-4">
+                    <div class="numeric-keypad">
+                        <div class="keypad-row">
+                            <button type="button" class="keypad-btn">1</button>
+                            <button type="button" class="keypad-btn">2</button>
+                            <button type="button" class="keypad-btn">3</button>
+                        </div>
+                        <div class="keypad-row">
+                            <button type="button" class="keypad-btn">4</button>
+                            <button type="button" class="keypad-btn">5</button>
+                            <button type="button" class="keypad-btn">6</button>
+                        </div>
+                        <div class="keypad-row">
+                            <button type="button" class="keypad-btn">7</button>
+                            <button type="button" class="keypad-btn">8</button>
+                            <button type="button" class="keypad-btn">9</button>
+                        </div>
+                        <div class="keypad-row">
+                            <button type="button" class="keypad-btn">,</button>
+                            <button type="button" class="keypad-btn">0</button>
+                            <button type="button" class="keypad-btn btn-danger">Limpiar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .numeric-keypad {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .keypad-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+    }
+
+    .keypad-btn {
+        flex: 1;
+        margin: 0 2px;
+        padding: 10px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+
+        .keypad-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .keypad-btn.btn-secondary {
+            background-color: #ffc107;
+        }
+
+        .keypad-btn.btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    #pinInput {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+</style>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const valueInput = document.getElementById("valueInput");
+            const keypadButtons = document.querySelectorAll(".keypad-btn");
+
+            valueInput.focus();
+
+            keypadButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const value = this.textContent;
+                    let currentValue = valueInput.value;
+
+                    if (value === "Limpiar") {
+                        valueInput.value = "";
+                        valueInput.focus();
+                        return;
+                    }
+
+                    if (value === ",") {
+                        if (currentValue === "") {
+                            valueInput.value = "0,";
+                        } else if (!currentValue.includes(",")) {
+                            valueInput.value += ",";
+                        }
+                        return;
+                    }
+
+                    if (/^\d$/.test(value)) {
+                        const parts = currentValue.split(",");
+
+                        // Parte entera: máx 9 dígitos
+                        if (parts[0].length >= 9 && parts.length === 1) return;
+
+                        // Parte decimal: máx 2 dígitos
+                        if (parts.length === 2 && parts[1].length >= 2) return;
+
+                        valueInput.value += value;
+                    }
+                });
+            });
+
+            document.addEventListener("keydown", function (e) {
+                let currentValue = valueInput.value;
+
+                if (e.key === "Enter") {
+                    document.querySelector("form").submit();
+                    return;
+                }
+
+                if (e.key === "Backspace") return; // permitimos borrar
+                if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+                e.preventDefault();
+
+                if (e.key === ",") {
+                    if (currentValue === "") {
+                        valueInput.value = "0,";
+                    } else if (!currentValue.includes(",")) {
+                        valueInput.value += ",";
+                    }
+                } else if (/^\d$/.test(e.key)) {
+                    const parts = currentValue.split(",");
+
+                    if (parts[0].length >= 9 && parts.length === 1) return;
+                    if (parts.length === 2 && parts[1].length >= 2) return;
+
+                    valueInput.value += e.key;
+                }
+            });
+        });
+    </script>
+}

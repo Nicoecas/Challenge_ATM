@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+
+    @if (User.Identity?.IsAuthenticated == false)
+    {
+        <h3 class="display-4">Bienvenidos al Banco ATM </h3>
+        <a class="btn btn-primary" asp-controller="Auth" asp-action="Login">Login</a>
+    }
+    else
+    {
+        <h4 class="display-4">Operaciones</h4>
+        <br />
+        <a class="btn btn-success" asp-controller="Transaction" asp-action="Deposit">Depósito</a>
+        <a class="btn btn-danger" asp-controller="Transaction" asp-action="Withdrawal">Retiro</a>
+        <a class="btn btn-warning" asp-controller="Transaction" asp-action="Balance">Balance</a>
+        <a class="btn btn-primary" asp-controller="Transaction" asp-action="Transactions">Ver Movimientos</a>
+    }
+
+</div>

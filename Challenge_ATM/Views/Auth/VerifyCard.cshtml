@@ -1,0 +1,178 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0 text-center">Iniciar Sesión</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="VerifyCard" method="post" id="pinForm">
+                        <span class="text-danger">@TempData["Message"]</span>
+
+                        <div class="mb-3">
+                            <label class="form-label">Número de Tarjeta</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control card-input" maxlength="4" value="@ViewData["Number1"]" readonly />
+                                <span class="input-group-text">-</span>
+                                <input type="text" class="form-control card-input" maxlength="4" value="@ViewData["Number2"]" readonly />
+                                <span class="input-group-text">-</span>
+                                <input type="text" class="form-control card-input" maxlength="4" value="@ViewData["Number3"]" readonly />
+                                <span class="input-group-text">-</span>
+                                <input type="text" class="form-control card-input" maxlength="4" value="@ViewData["Number4"]" readonly />
+                            </div>
+                            <input type="hidden" asp-for="Number1" value="@ViewData["Number1"]" />
+                            <input type="hidden" asp-for="Number2" value="@ViewData["Number2"]" />
+                            <input type="hidden" asp-for="Number3" value="@ViewData["Number3"]" />
+                            <input type="hidden" asp-for="Number4" value="@ViewData["Number4"]" />
+                            <div class="mt-1">
+                                <span asp-validation-for="Number1" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number2" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number3" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number4" class="text-danger small d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">PIN</label>
+                            <input asp-for="PIN" type="password" class="form-control text-center" id="pinInput" maxlength="6" />
+                            <span asp-validation-for="PIN" class="text-danger small d-block"></span>
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-success" id="submitForm">Ingresar</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <div class="numeric-keypad">
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">1</button>
+                                <button type="button" class="keypad-btn">2</button>
+                                <button type="button" class="keypad-btn">3</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">4</button>
+                                <button type="button" class="keypad-btn">5</button>
+                                <button type="button" class="keypad-btn">6</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">7</button>
+                                <button type="button" class="keypad-btn">8</button>
+                                <button type="button" class="keypad-btn">9</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn btn-secondary">Volver</button>
+                                <button type="button" class="keypad-btn">0</button>
+                                <button type="button" class="keypad-btn btn-danger">Limpiar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .numeric-keypad {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .keypad-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+    }
+
+    .keypad-btn {
+        flex: 1;
+        margin: 0 2px;
+        padding: 10px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+
+        .keypad-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .keypad-btn.btn-secondary {
+            background-color: #ffc107;
+        }
+
+        .keypad-btn.btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    #pinInput {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const pinInput = document.getElementById("pinInput");
+            const keypadButtons = document.querySelectorAll(".keypad-btn");
+
+            pinInput.focus();
+
+            keypadButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const value = this.textContent;
+
+                    if (value === "Limpiar") {
+                        pinInput.value = "";
+                        pinInput.focus();
+                        return;
+                    }
+
+                    if (value === "Volver") {
+                        window.location.href = "/";
+                        return;
+                    }
+
+                    if (value === "Ingresar") {
+                        document.getElementById("submitForm").click();
+                        return;
+                    }
+
+                    if (pinInput.value.length < 4) {
+                        pinInput.value += value;
+                    }
+
+                    if (pinInput.value.length === 4) {
+                        document.getElementById("submitForm").click();
+                    }
+                });
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    document.getElementById("submitForm").click();
+                } else if (e.key === "Backspace") {
+                    pinInput.value = pinInput.value.slice(0, -1);
+                } else if (e.key >= "0" && e.key <= "9") {
+                    if (pinInput.value.length < 6) {
+                        pinInput.value += e.key;
+                        if (pinInput.value.length === 6) {
+                            document.getElementById("submitForm").click();
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

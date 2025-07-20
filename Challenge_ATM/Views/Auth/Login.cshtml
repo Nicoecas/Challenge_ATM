@@ -1,0 +1,159 @@
+﻿@model VerifyCardModel
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0 text-center">Iniciar Sesión</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Login" method="post">
+                        <span class="text-danger">@TempData["Message"]</span>
+
+                        <div class="mb-3">
+                            <label class="form-label">Número de Tarjeta</label>
+                            <div class="input-group">
+                                <input asp-for="Number1" class="form-control card-input" maxlength="4" />
+                                <span class="input-group-text">-</span>
+                                <input asp-for="Number2" class="form-control card-input" maxlength="4" />
+                                <span class="input-group-text">-</span>
+                                <input asp-for="Number3" class="form-control card-input" maxlength="4" />
+                                <span class="input-group-text">-</span>
+                                <input asp-for="Number4" class="form-control card-input" maxlength="4" />
+                            </div>
+                            <div class="mt-1">
+                                <span asp-validation-for="Number1" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number2" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number3" class="text-danger small d-block"></span>
+                                <span asp-validation-for="Number4" class="text-danger small d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Iniciar sesión</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <div class="numeric-keypad">
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">1</button>
+                                <button type="button" class="keypad-btn">2</button>
+                                <button type="button" class="keypad-btn">3</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">4</button>
+                                <button type="button" class="keypad-btn">5</button>
+                                <button type="button" class="keypad-btn">6</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn">7</button>
+                                <button type="button" class="keypad-btn">8</button>
+                                <button type="button" class="keypad-btn">9</button>
+                            </div>
+                            <div class="keypad-row">
+                                <button type="button" class="keypad-btn btn-secondary">Home</button>
+                                <button type="button" class="keypad-btn">0</button>
+                                <button type="button" class="keypad-btn btn-danger">Limpiar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .numeric-keypad {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .keypad-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+    }
+
+    .keypad-btn {
+        flex: 1;
+        margin: 0 2px;
+        padding: 10px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+
+        .keypad-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .keypad-btn.btn-secondary {
+            background-color: #ffc107;
+        }
+
+        .keypad-btn.btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputs = document.querySelectorAll(".card-input");
+            let currentInputIndex = 0;
+
+            inputs[0].focus();
+
+            document.querySelectorAll(".keypad-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const value = this.textContent;
+
+                    if (value === "Limpiar") {
+                        inputs.forEach(input => input.value = "");
+                        currentInputIndex = 0;
+                        inputs[currentInputIndex].focus();
+                        return;
+                    }
+
+                    if (value === "Home") {
+                        window.location.href = "/";
+                        return;
+                    }
+
+                    const currentInput = inputs[currentInputIndex];
+                    if (currentInput.value.length < 4) {
+                        currentInput.value += value;
+                    }
+
+                    if (currentInput.value.length === 4 && currentInputIndex < inputs.length - 1) {
+                        currentInputIndex++;
+                        inputs[currentInputIndex].focus();
+                    }
+                });
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key >= "0" && e.key <= "9") {
+                    const currentInput = document.activeElement;
+                    if (inputs.contains(currentInput)) {
+                        currentInput.value += e.key;
+                        const index = Array.from(inputs).indexOf(currentInput);
+                        if (currentInput.value.length === 4 && index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
